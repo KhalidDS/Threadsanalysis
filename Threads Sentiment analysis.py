@@ -178,7 +178,7 @@ df.head()
 # plt.title('Distribution of Compund')
 # plt.show()
 
-# In[18]:
+# In[17]:
 
 
 positive_threshold = 0.2
@@ -197,51 +197,52 @@ for index, row in df.iterrows():
                 df.at[index, 'Sentiment'] = 'Neutral'
 
 
-# In[19]:
+# In[18]:
 
 
 df.sample(5)
 
 
-# In[20]:
+# In[19]:
 
 
 df['Sentiment'].value_counts()
 
 
-# In[21]:
+# In[20]:
 
 
 dff=df[['content','Sentiment']]
 
 
-# In[22]:
+# In[21]:
 
 
 demoji.download_codes()
 
 
-# In[23]:
+# In[22]:
 
 
 def remove_emojis(text):
     return demoji.replace(text, '')
 
 
-# In[24]:
+
+# In[23]:
 
 
 #Applying the remove_emojis function
 dff['content'] = dff['content'].apply(remove_emojis)
 
 
-# In[25]:
+# In[24]:
 
 
 dff
 
 
-# In[26]:
+# In[25]:
 
 
 nltk.download('stopwords')
@@ -249,7 +250,7 @@ from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 
 
-# In[27]:
+# In[26]:
 
 
 corpus = []
@@ -270,14 +271,14 @@ for i in range(len(dff)):
     
 
 
-# In[28]:
+# In[27]:
 
 
 #convert labels into numerical format
 dff['Sentiment'] = dff['Sentiment'].map({'Positive':1,'Neutral':0,'Negative':-1})
 
 
-# In[29]:
+# In[28]:
 
 
 #model training
@@ -326,7 +327,7 @@ for n in n_values:
     print()
 
 
-# In[30]:
+# In[29]:
 
 
 from sklearn.feature_extraction.text import CountVectorizer
@@ -336,7 +337,7 @@ n=1
 vectorizer1 = CountVectorizer(ngram_range=(n, n))
 
 
-# In[31]:
+# In[30]:
 
 
 #fit and tranform the data
@@ -345,7 +346,7 @@ x = vectorizer1.fit_transform(corpus)
 y=dff['Sentiment']
 
 
-# In[32]:
+# In[31]:
 
 
 feature_names = vectorizer1.get_feature_names_out()
@@ -354,7 +355,7 @@ print(feature_names)
 print('No. of feature_words: ', len(feature_names))
 
 
-# In[33]:
+# In[32]:
 
 
 #train test split
@@ -363,7 +364,7 @@ from sklearn.model_selection import train_test_split
 x_train,x_test,y_train,y_test=train_test_split(x , y,test_size=0.2,random_state=42)
 
 
-# In[34]:
+# In[33]:
 
 
 #import libarary
@@ -372,19 +373,19 @@ from sklearn.linear_model import LinearRegression
 lr=LinearRegression()
 
 
-# In[35]:
+# In[34]:
 
 
 lr.fit(x_train,y_train)
 
 
-# In[36]:
+# In[35]:
 
 
 y_pred=lr.predict(x_test)
 
 
-# In[48]:
+# In[36]:
 
 
 #cheack the accuracy
@@ -396,75 +397,268 @@ y_pred = y_pred.astype(int)
 
 # Print evaluation metrics
 print("Accuracy score:", accuracy_score(y_test, y_pred))
-print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
-print("Classification Report:\n", classification_report(y_test, y_pred))
 
 
-# In[39]:
+
+# In[37]:
 
 
 from sklearn.ensemble import RandomForestClassifier
 treemodel=RandomForestClassifier()
 
 
-# In[40]:
+# In[38]:
 
 
 treemodel.fit(x_train,y_train)
 
 
-# In[41]:
+# In[39]:
 
 
 y_pred=treemodel.predict(x_test)
 
 
-# In[42]:
+# In[40]:
 
 
 #cheack the accuracy
 
 print("Accuracy score : \n",accuracy_score(y_pred,y_test))
-print("Confusion Matrix : \n",confusion_matrix(y_pred,y_test))
-print("Classfication Report : \n",classification_report(y_pred,y_test))
 
 
-# In[43]:
+# In[41]:
 
 
 from sklearn.naive_bayes import MultinomialNB
 naive_bayes = MultinomialNB()
 
 
-# In[44]:
+# In[42]:
 
 
 naive_bayes.fit(x_train,y_train)
 
 
-# In[45]:
+# In[43]:
 
 
 y_pred=naive_bayes.predict(x_test)
 
 
-# In[46]:
+# In[44]:
 
 
 #cheack the accuracy
 
 print("Accuracy score : \n",accuracy_score(y_pred,y_test))
-print("Confusion Matrix : \n",confusion_matrix(y_pred,y_test))
-print("Classfication Report : \n",classification_report(y_pred,y_test))
+
+
+# In[49]:
+
+
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# Create the Gradient Boosting Classifier
+gbm_model = GradientBoostingClassifier()
+
+# Train the GBM model on the training data
+gbm_model.fit(x_train, y_train)
+
+# Test the GBM model on the test data
+y_pred_gbm = gbm_model.predict(x_test)
+
+# Calculate accuracy, confusion matrix, and classification report
+accuracy_gbm = accuracy_score(y_test, y_pred_gbm)
+conf_matrix_gbm = confusion_matrix(y_test, y_pred_gbm)
+classification_report_gbm = classification_report(y_test, y_pred_gbm)
+
+# Print the results
+print("Accuracy score (GBM): \n", accuracy_gbm)
+
+
+
+# In[50]:
+
+
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# Create the ExtraTreesClassifier model
+treemodel = ExtraTreesClassifier()
+
+# Train the model on the training data (assuming you have x_train and y_train)
+treemodel.fit(x_train, y_train)
+
+# Predict on the test data
+y_pred = treemodel.predict(x_test)
+
+# Check the accuracy
+print("Accuracy score:")
+print(accuracy_score(y_test, y_pred))
+
+
+
+# In[51]:
+
+
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# Create the ExtraTreesClassifier model
+extra_trees_model = ExtraTreesClassifier()
+
+# Train the model on the training data
+extra_trees_model.fit(x_train, y_train)
+
+# Make predictions on the test data
+y_pred_extra_trees = extra_trees_model.predict(x_test)
+
+# Calculate accuracy and other metrics
+accuracy = accuracy_score(y_test, y_pred_extra_trees)
+conf_matrix = confusion_matrix(y_test, y_pred_extra_trees)
+classification_rep = classification_report(y_test, y_pred_extra_trees)
+
+# Print the results
+print("Accuracy score : \n", accuracy)
+
 
 
 # In[52]:
 
 
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# Create a DecisionTreeClassifier with pruning parameters
+decision_tree_model = DecisionTreeClassifier(max_depth=5, min_samples_split=5, min_samples_leaf=2)
+
+# Train the model on the training data
+decision_tree_model.fit(x_train, y_train)
+
+# Predict on the test data
+y_pred = decision_tree_model.predict(x_test)
+
+# Evaluate the model
+print("Accuracy score:")
+print(accuracy_score(y_pred, y_test))
+
+
+
+# In[53]:
+
+
+from sklearn.ensemble import BaggingClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# Create the base decision tree classifier
+base_model = DecisionTreeClassifier()
+
+# Create the bagging classifier with decision tree as the base estimator
+bagged_model = BaggingClassifier(base_model, n_estimators=10, random_state=42)
+
+# Fit the bagging classifier on the training data
+bagged_model.fit(x_train, y_train)
+
+# Predict using the bagging classifier on the test data
+y_pred = bagged_model.predict(x_test)
+
+# Check the accuracy
+print("Accuracy score:")
+print(accuracy_score(y_test, y_pred))
+
+
+
+# In[54]:
+
+
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# Create an AdaBoostClassifier
+adaboost_model = AdaBoostClassifier()
+
+# Train the AdaBoostClassifier on the training data
+adaboost_model.fit(x_train, y_train)
+
+# Make predictions on the test data
+y_pred_adaboost = adaboost_model.predict(x_test)
+
+# Check the accuracy
+accuracy_adaboost = accuracy_score(y_pred_adaboost, y_test)
+
+# Print the results
+print("Accuracy score for AdaBoost: \n", accuracy_adaboost)
+
+
+
+# In[55]:
+
+
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# Create the GradientBoostingClassifier model
+gbm_model = GradientBoostingClassifier()
+
+# Fit the model on the training data
+gbm_model.fit(x_train, y_train)
+
+# Predict on the test data
+y_pred_gbm = gbm_model.predict(x_test)
+
+# Check the accuracy
+accuracy_gbm = accuracy_score(y_pred_gbm, y_test)
+print("Accuracy score (GBM):", accuracy_gbm)
+
+
+# In[56]:
+
+
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# Create the ExtraTreesClassifier model
+treemodel = ExtraTreesClassifier()
+
+# Train the model on the training data (assuming you have x_train and y_train)
+treemodel.fit(x_train, y_train)
+
+# Predict on the test data
+y_pred = treemodel.predict(x_test)
+
+# Check the accuracy
+print("Accuracy score:", accuracy_score(y_test, y_pred))
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[45]:
+
+
 dff
 
 
-# In[67]:
+# In[ ]:
+
+
+
+
+
+# In[46]:
 
 
 train = dff
@@ -472,8 +666,7 @@ train.set_axis(['content', 'Sentiment'], axis=1, inplace=True)
 train
 
 
-# In[69]:
-
+# In[47]:
 
 
 from sklearn.svm import LinearSVC
@@ -483,14 +676,13 @@ svc = LinearSVC()
 pipeline = make_pipeline(vectorizer, svc)
 
 
-# In[72]:
-
+# In[48]:
 
 
 pipeline.fit(train.Sentiment, train.Sentiment)
 
 
-# In[77]:
+# In[ ]:
 
 
 import eli5
@@ -498,19 +690,19 @@ import eli5
 eli5.show_weights(svc, vec=vectorizer, top=40)
 
 
-# In[83]:
+# In[ ]:
 
 
 
 
 
-# In[84]:
+# In[ ]:
 
 
 df.to_csv('threadspreNLP.csv', index=False)
 
 
-# In[86]:
+# In[ ]:
 
 
 dff.to_csv('threadspostNLP.csv', index=False)
